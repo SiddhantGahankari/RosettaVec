@@ -4,6 +4,16 @@
 #include "../include/translate.h"
 #include "../include/vector.h"
 #include "../include/globals.h"
+#include "../include/ivf.h"
+#include "../include/bench.h"
+#include <sys/time.h>
+
+// Helper function to measure time
+static double get_time_in_ms() {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return (tv.tv_sec * 1000.0) + (tv.tv_usec / 1000.0);
+}
 
 
 
@@ -41,11 +51,21 @@ int main() {
         if (test_count > 0)
         {
             printf("Loaded %d test pairs.\n", test_count);
-            evaluate_accuracy_fr();
         }
         else
         {
             printf("No test pairs loaded. Continuing without evaluation.\n");
+        }
+
+        printf("Building IVF Index for French vocabulary...\n");
+        double start_time = get_time_in_ms();
+        ivf_build(&fr_ivf_index, fr_embeddings, fr_count);
+        double end_time = get_time_in_ms();
+        printf("IVF build time: %.2f ms\n", end_time - start_time);
+
+        if (test_count > 0) {
+            run_benchmark(fr_embeddings, fr_count, &fr_ivf_index, test_pairs, test_count);
+            evaluate_accuracy_fr();
         }
 
         printf("\nTranslate(type 'quit' to exit):\n");
@@ -100,6 +120,8 @@ int main() {
                 }
             }
         }
+        
+        ivf_free(&fr_ivf_index);
     }
 
     else if(strcmp(lang,"spanish") ==0)
@@ -122,11 +144,21 @@ int main() {
         if (test_count > 0)
         {
             printf("Loaded %d test pairs.\n", test_count);
-            evaluate_accuracy_es();
         }
         else
         {
             printf("No test pairs loaded. Continuing without evaluation.\n");
+        }
+
+        printf("Building IVF Index for Spanish vocabulary...\n");
+        double start_time = get_time_in_ms();
+        ivf_build(&es_ivf_index, es_embeddings, es_count);
+        double end_time = get_time_in_ms();
+        printf("IVF build time: %.2f ms\n", end_time - start_time);
+
+        if (test_count > 0) {
+            run_benchmark(es_embeddings, es_count, &es_ivf_index, test_pairs, test_count);
+            evaluate_accuracy_es();
         }
 
         printf("\nInteractive translation (type 'quit' to exit):\n");
@@ -181,6 +213,8 @@ int main() {
                 }
             }
         }
+
+        ivf_free(&es_ivf_index);
     }
     else
     {

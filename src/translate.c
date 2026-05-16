@@ -9,62 +9,14 @@ char buffer[MAX_WORD_LEN]; // buffer for whenever required in the code
 // find top-k similar French words based on cosine similarity
 void find_top_k_fr(float *source_vector,int k, int *top_indices , float *top_scores)
 {
-    for (int i = 0; i < k; i++)
-    {
-        top_indices[i] = -1;
-        top_scores[i] = -2.0;
-    }
-
-    for (int i = 0; i < fr_count; i++)
-    {
-        float sim = cosine_similarity(source_vector, fr_embeddings[i].vector);
-
-        for (int j = 0; j < k; j++)
-        {
-            if (sim > top_scores[j])
-            {
-                for (int l = k - 1; l > j; l--)
-                {
-                    top_indices[l] = top_indices[l - 1];
-                    top_scores[l] = top_scores[l - 1];
-                }
-                top_indices[j] = i;
-                top_scores[j] = sim;
-                break;
-            }
-        }
-    }
+    ivf_search(&fr_ivf_index, fr_embeddings, source_vector, k, top_indices, top_scores);
 }
 
 
 // find top-k similar Spanish words similarly as above
 void find_top_k_es(float *source_vector, int k, int *top_indices, float *top_scores)
 {
-    for (int i = 0; i < k; i++)
-    {
-        top_indices[i] = -1;
-        top_scores[i] = -2.0;
-    }
-
-    for (int i = 0; i < es_count; i++)
-    {
-        float sim = cosine_similarity(source_vector, es_embeddings[i].vector);
-
-        for (int j = 0; j < k; j++)
-        {
-            if (sim > top_scores[j])
-            {
-                for (int l = k - 1; l > j; l--)
-                {
-                    top_indices[l] = top_indices[l - 1];
-                    top_scores[l] = top_scores[l - 1];
-                }
-                top_indices[j] = i;
-                top_scores[j] = sim;
-                break;
-            }
-        }
-    }
+    ivf_search(&es_ivf_index, es_embeddings, source_vector, k, top_indices, top_scores);
 }
 
 

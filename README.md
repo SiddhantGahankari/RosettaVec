@@ -54,8 +54,11 @@ gcc -Iinclude src/*.c -o main -lm
 ## Features included in the project:
 
 - Load and process word embeddings from files
+- High-speed Approximate Nearest Neighbor Search using an **Inverted File Index (IVF)**
+- K-means++ Clustering to divide vocabulary into optimal search spaces (O(V/K) latency)
 - Translate individual words using top-k cosine similarity
 - Translate entire sentences word-by-word
+- Built-in benchmarking for measuring search speedup and accuracy recall
 - Evaluate similarity and semantic closeness of translations
 - Modular code architecture with clear separation of concerns
 
